@@ -180,3 +180,8 @@ Compare the target's actual GPT geometry with `first-install.json`, and check
 the boot image against the target boot partition size before any installation.
 Retain the original Data seed and platform seed for later builds. Host
 verification does not establish a successful device boot.
+
+The sheng fork workflow accepts standard `macos-26` and `macos-26-intel` build
+hosts. It resolves Homebrew tool paths with `brew --prefix`; the selected
+iPadOS target and preserved installation seed are independent of host CPU.
+The Intel host is a fallback when hosted ARM capacity is unavailable.

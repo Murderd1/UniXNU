@@ -148,3 +148,7 @@ seed 备份下载；请自行长期保存，Actions 缓存不能作为永久备�
 写为零，刷入会清除 Android 用户数据。安装前应将平板实际 GPT 几何与
 `first-install.json` 比较，并核对启动镜像是否适合实际 boot 分区。保留原始 Data
 种子和平台种子供后续构建使用。主机验证不代表已经通过平板启动验证。
+
+sheng 分支工作流支持标准 `macos-26` 和 `macos-26-intel` 构建环境，
+使用 `brew --prefix` 获取工具路径。目标 iPadOS 配置和原安装种子
+与构建机器的 CPU 无关；ARM 云端资源不足时可尝试 Intel 环境。
