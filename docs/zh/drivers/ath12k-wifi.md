@@ -86,3 +86,8 @@ python3 tools/check-mainline-link.py --build-report FILE --kernel FILE
 设备已验证 Wi-Fi 开关、SSID 扫描、WPA2 关联、DHCP、网络流量和
 连接结果通知。当前待实测：取消和超时收尾、信号显示、Data 固件
 启动，以及吞吐、抖动和发热。详见[sheng 网络记录](/zh/devices/sheng#network)。
+
+sheng 干净构建可运行 `python3 scripts/fetch-wifi-firmware.py`，从板级清单
+记录的固定提交获取缺失的 WCN7850 固件；用户态构建器也会在打包前调用它。
+文件长度及 SHA-256 必须与原有固定值一致，本地存在不同文件时会拒绝继续。
+`--check` 只检查本地输入，不下载。固件二进制不进入 Git。

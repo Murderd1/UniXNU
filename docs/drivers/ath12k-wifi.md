@@ -89,3 +89,9 @@ Device verification covers Wi-Fi toggling, SSID scanning, WPA2 association,
 DHCP, traffic and join-result delivery. Current device checks pending:
 cancellation/timeout completion, signal display, Data firmware startup,
 throughput, jitter and heat. See the [sheng network record](/devices/sheng#network).
+
+For a clean sheng build, `python3 scripts/fetch-wifi-firmware.py` fetches missing
+WCN7850 inputs from the immutable source recorded in the board manifest. The
+userspace builder invokes it before staging. Length and SHA-256 must match the
+existing pins; a different local file is rejected. `--check` verifies local
+inputs without a download. Firmware binaries remain outside Git.
