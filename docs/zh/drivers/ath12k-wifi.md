@@ -95,3 +95,8 @@ sheng 干净构建可运行 `python3 scripts/fetch-wifi-firmware.py`，从板级
 sheng 固件读取主机测试覆盖现有白名单，包括 `amss2.bin` 和可选的
 无人值守测试文件 `join.txt`，并拒绝未知文件名和路径穿越。失败时保留
 内存检查与断言诊断。该测试不执行无线电或网络操作。
+
+sheng 用户态构建器会先调用组件的 `tools/fetch-sources.py`，获取并验证
+固定版本的依赖，然后编译 supplicant。干净检出没有 `deps/`，单独执行
+`--check` 不会准备源码。打包流程在耗时的运行环境准备前先编译并签名
+iOS Wi-Fi 用户态层。

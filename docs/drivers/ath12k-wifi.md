@@ -100,3 +100,8 @@ The sheng firmware-reader host fixture covers all existing allowed names,
 including `amss2.bin` and the optional unattended-test `join.txt`, and rejects
 unknown names and path traversal. It prints sanitizer and assertion diagnostics
 on failure. This fixture does not perform radio or network operations.
+
+The sheng userspace builder resolves the component's locked sources with
+`tools/fetch-sources.py` before building the supplicant. A clean checkout has
+no `deps/` tree; `--check` alone cannot prepare it. The package workflow builds
+and signs the iOS Wi-Fi layer before the long runtime preparation step.
