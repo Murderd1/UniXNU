@@ -95,3 +95,8 @@ WCN7850 inputs from the immutable source recorded in the board manifest. The
 userspace builder invokes it before staging. Length and SHA-256 must match the
 existing pins; a different local file is rejected. `--check` verifies local
 inputs without a download. Firmware binaries remain outside Git.
+
+The sheng firmware-reader host fixture covers all existing allowed names,
+including `amss2.bin` and the optional unattended-test `join.txt`, and rejects
+unknown names and path traversal. It prints sanitizer and assertion diagnostics
+on failure. This fixture does not perform radio or network operations.
