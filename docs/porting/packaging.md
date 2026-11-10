@@ -164,3 +164,19 @@ For the 24A446 fileset, `regression_policy` bounds the unresolved references by
 original kernel address and importing component. New gaps fail packaging even
 with `--allow-missing`; this check does not qualify the remaining experimental
 paths or replace a device boot test.
+
+## First-install userdata in a device fork
+
+A boot package does not include the OS and SystemOS storage windows. The sheng
+fork's `scripts/build-first-install-userdata.py --unixnu ../UniXNU` builds these
+with the selected OS profile and restores their ordered verification tables.
+It verifies the existing signed policy headers and requires the reconstructed
+image and table hashes to match; it does not create a new signing identity.
+
+For iPadOS 27, selecting `init_data` in that fork also uploads the separate
+`first-install-userdata-27` artifact. The Android sparse image explicitly writes
+zeros through the rest of userdata and erases Android user data on flash.
+Compare the target's actual GPT geometry with `first-install.json`, and check
+the boot image against the target boot partition size before any installation.
+Retain the original Data seed and platform seed for later builds. Host
+verification does not establish a successful device boot.

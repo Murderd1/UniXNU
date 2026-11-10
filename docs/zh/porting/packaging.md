@@ -135,3 +135,16 @@ seed 备份下载；请自行长期保存，Actions 缓存不能作为永久备�
 
 24A446 的 `regression_policy` 按原内核地址和导入组件限制未解析引用；即使启用
 `--allow-missing`，新增缺口也会使打包失败。这不代表剩余实验路径已验证，仍需上机启动测试。
+
+## 设备 fork 的首次安装 userdata
+
+启动包不包含存储中的 OS 和 SystemOS 窗口。sheng fork 的
+`scripts/build-first-install-userdata.py --unixnu ../UniXNU` 使用所选系统配置构建
+这两个窗口，并恢复其有序校验表。脚本验证已有策略头的签名，要求重建出的镜像及
+校验表哈希与签名内容一致，不生成新的签名身份。
+
+在该 fork 的 iPadOS 27 工作流中选择 `init_data`，还会生成单独的
+`first-install-userdata-27` 产物。Android sparse 镜像会把 userdata 其余空间明确
+写为零，刷入会清除 Android 用户数据。安装前应将平板实际 GPT 几何与
+`first-install.json` 比较，并核对启动镜像是否适合实际 boot 分区。保留原始 Data
+种子和平台种子供后续构建使用。主机验证不代表已经通过平板启动验证。
