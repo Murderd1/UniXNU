@@ -100,3 +100,7 @@ sheng 用户态构建器会先调用组件的 `tools/fetch-sources.py`，获取�
 固定版本的依赖，然后编译 supplicant。干净检出没有 `deps/`，单独执行
 `--check` 不会准备源码。打包流程在耗时的运行环境准备前先编译并签名
 iOS Wi-Fi 用户态层。
+
+依赖锁包含根路径匹配规则和单个文件，因此获取器使用
+`git sparse-checkout set --no-cone`。新稀疏克隆默认的目录模式会
+拒绝这些规则。此修复不改变依赖版本。

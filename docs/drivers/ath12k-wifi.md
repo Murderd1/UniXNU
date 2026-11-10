@@ -105,3 +105,7 @@ The sheng userspace builder resolves the component's locked sources with
 `tools/fetch-sources.py` before building the supplicant. A clean checkout has
 no `deps/` tree; `--check` alone cannot prepare it. The package workflow builds
 and signs the iOS Wi-Fi layer before the long runtime preparation step.
+
+The source lock contains anchored patterns and individual files. Its fetcher
+uses `git sparse-checkout set --no-cone`; the default cone mode of a fresh
+sparse clone rejects those patterns. Dependency revisions are unchanged.
