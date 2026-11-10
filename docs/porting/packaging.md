@@ -185,3 +185,8 @@ The sheng fork workflow accepts standard `macos-26` and `macos-26-intel` build
 hosts. It resolves Homebrew tool paths with `brew --prefix`; the selected
 iPadOS target and preserved installation seed are independent of host CPU.
 The Intel host is a fallback when hosted ARM capacity is unavailable.
+
+The fork installs the official `ipsw` 3.1.743 release executable directly,
+verifying the architecture-specific archive against the SHA-256 published
+by its official Homebrew formula. This avoids an invalid same-name cask
+definition on the Intel runner; the command interface is unchanged.
