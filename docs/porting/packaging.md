@@ -23,6 +23,23 @@ same script text. A board changes `board.toml`, never the script.
 5. **Sources are pinned.** `deps` fetches only the revisions that `feeds.toml`,
    `.gitmodules` and `unixnu.lock` name.
 
+Keep these pins aligned with the board's imported interfaces. For example,
+sheng Bluetooth requires the SM8550 GENI clock/QUP DMA sources and ArmCpu's
+shared SPI interfaces. Its iPadOS 27 and macOS archive recipes also fetch the
+hash-pinned keyboard MCU firmware before the display/board archive consumes it.
+The selected RamBlock revision must also provide the Data I/O counters consumed
+by BootLog. The iPadOS display adapter exports `native_legacy_request_layout`
+from its reviewed ABI fixture for the board rejection diagnostics.
+The iPadOS 27 board archive compiles the Bluetooth VFS firmware reader with BSD
+flags alongside the ADSP reader. Calls to the AES and Ethernet services are
+selected only for the macOS recipe that builds them; unresolved authenticated
+weak pointers cannot be left in an arm64e kernel.
+Each required input must have a preparation step in a clean build.
+
+Firmware archive fetches serialize writers of the resume cache, retry bounded
+range requests and verify the full pinned size and digests before extraction.
+A manual prefetch can safely share the package preflight cache.
+
 ## Steps
 
 `unixnu release` runs these steps in order and prints a `step <name>` line before each.

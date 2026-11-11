@@ -15,6 +15,21 @@ spec.loader.exec_module(reference)
 
 
 class ReferenceCacheTests(unittest.TestCase):
+    def test_cache_capture_hook_is_stubbed_only_in_reference(self):
+        log = '''Undefined symbols for architecture arm64e.kernel:
+  "_boot_cache_input_capture", referenced from:
+      _sheng_dump_user_backtrace in justlto.o
+  "_native_source_storage_start", referenced from:
+      _bsd_init in justlto.o
+  "_boot_log_rounds", referenced from:
+      _load_init_program in justlto.o
+  "_unrelated_missing_symbol", referenced from:
+      _bsd_init in justlto.o
+'''
+        self.assertEqual(reference.reference_stub_names(log),
+                         ['_boot_cache_input_capture', '_boot_log_rounds',
+                          '_native_source_storage_start'])
+
     def test_lto_filelist_paths_are_relative_to_the_object_directory(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

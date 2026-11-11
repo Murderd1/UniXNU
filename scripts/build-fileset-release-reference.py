@@ -54,6 +54,13 @@ def linked_objects(directory, lto):
             for name in objects if name.strip()]
 
 
+def reference_stub_names(build_log):
+    """Known board hooks omitted from the non-running comparison kernel."""
+    return sorted(set(re.findall(
+        r'^\s+"(_(?:native_[a-z0-9_]+|boot_log_rounds|boot_cache_input_capture))"',
+        build_log, re.M)))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--tree', required=True, type=Path, help='prepared XNU build tree of the OS profile')
@@ -131,7 +138,7 @@ def main():
     # the authenticated pointer of an undefined weak symbol fails the link. The private copy stubs them: this
     # comparison kernel never runs, the prelink step reads its layout.
     build_log = (output / f'{mode}-build.log').read_text()
-    stub_names = sorted(set(re.findall(r'^\s+"(_(?:native_[a-z0-9_]+|boot_log_rounds))"', build_log, re.M)))
+    stub_names = reference_stub_names(build_log)
     if stub_names:
         (output / 'native-stubs.c').write_text(''.join(f'long {name[1:]};\n' for name in stub_names))   # the linker names carry the leading underscore
         iphoneos = subprocess.check_output(['xcrun', '--sdk', 'iphoneos', '--show-sdk-path'], text=True).strip()

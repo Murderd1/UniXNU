@@ -14,6 +14,11 @@
 
 kernelcache 是 `KernelCache` IM4P 的 LZFSE 负载。选出 arm64 切片，并按 `kernelcache_sha256` 校验。
 
+Fileset 配方可以通过 `build-fileset-release-reference.py --lto` 构建隔离的
+RELEASE 对照内核。它只提供布局证据，不执行。其所选归档没有提供的板级
+hook（包括 `boot_cache_input_capture`）仅在这个私有构建中使用占位符。
+启动内核仍链接真实的板级实现。
+
 ## 预链接步骤
 
 `kits/XnuPrelink/emit_prelink.py`：

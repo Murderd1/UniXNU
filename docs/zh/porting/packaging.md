@@ -11,6 +11,18 @@
 4. **构建目标是参数。** 单一分支服务所有 OS 配置。`--os 17|27|PROFILE` 为本次运行选择配置。随配置不同的取值写在 `board.toml` 的 `[os_overrides."<profile>"]` 下；不按目标建分支，也不为第二个目标另存驱动、补丁或优化。
 5. **源码已固定。** `deps` 只获取 `feeds.toml`、`.gitmodules` 和 `unixnu.lock` 指定的版本。
 
+这些固定版本必须与板级导入的接口一致。例如，sheng 蓝牙需要 SM8550 的
+GENI 时钟/QUP DMA 源码和 ArmCpu 的共享 SPI 接口。其 iPadOS 27 与 macOS
+归档配方还会在显示/板级归档使用之前，获取按哈希固定的键盘 MCU 固件。
+RamBlock 版本还必须提供 BootLog 使用的 Data I/O 计数器。iPadOS 显示适配器
+从经过审查的 ABI 数据导出 `native_legacy_request_layout`，供板级拒绝原因诊断读取。iPadOS 27 的板级归档使用 BSD 编译参数，
+同时编译蓝牙和 ADSP 的 VFS 固件读取器。AES 和以太网服务调用仅在构建这些服务的
+macOS 配方中启用；arm64e 内核不能保留未解析的带认证弱符号指针。
+干净构建必须为每个必需输入提供准备步骤。
+
+固件归档下载对断点缓存使用单写入锁，并有限重试分段请求；提取前必须通过完整文件
+长度与固定哈希检查。手动预下载可以与打包 preflight 共用缓存。
+
 ## 步骤
 
 `unixnu release` 按顺序运行下列步骤，每步之前打印一行 `step <名称>`。

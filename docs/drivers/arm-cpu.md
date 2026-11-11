@@ -12,6 +12,12 @@ ARM64 CPU, GIC and timer driver. Publishes the CPUs, interrupt controller and ar
 
 The catalog targets ARM GICv3 and the ARM generic timer with the selected XNU ABI.
 
+The pinned source provides `armcpu_spi_attach` for exclusive sources,
+`armcpu_spi_share` for shared level sources and `armcpu_spi_mask` for direct
+masking. Each shared handler acknowledges its own peripheral status.
+Boards using these interfaces must retain the matching component revision;
+an older ArmCpu archive cannot satisfy their imports.
+
 ## Build
 
 The selected kernel recipe builds `build/armcpu/libArmCpu.a` through `component:ArmCpu`. Enable its kernel configuration and verify the GIC/timer/PSCI resources using the platform adaptation procedure.

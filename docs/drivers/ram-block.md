@@ -8,6 +8,11 @@ Sparse RAM-backed block storage with optional persistent backing callbacks.
 
 RamBlock publishes the Data image as a block device. Its persistence interface uses native_ufs_store callbacks; the board supplies the storage and reset policy.
 
+The pinned direct Data implementation serializes overlapping write ranges and
+flushes while allowing independent reads. It exposes `native_data_io_*` and
+`native_data_flush*` counters for board boot diagnostics. Keep the catalog
+revision and gitlink aligned with consumers of these interfaces.
+
 ## Integration
 
 The catalog records implementation scope, hardware and OS requirements, board dependencies, revision, build stage, outputs, and runtime identifiers. The selected profile orders build commands by dependency.

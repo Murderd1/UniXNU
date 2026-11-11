@@ -14,6 +14,12 @@ The prelinked kernel combines a kernel built from source with the original Apple
 
 The kernelcache is the LZFSE payload of the `KernelCache` IM4P. The arm64 slice is selected and checked against `kernelcache_sha256`.
 
+Fileset recipes can build an isolated RELEASE comparison kernel with
+`build-fileset-release-reference.py --lto`. It supplies layout evidence and is
+never executed. Board hooks absent from its selected archives, including
+`boot_cache_input_capture`, receive placeholders only in that private build.
+The boot kernel still links the real board implementations.
+
 ## Prelink steps
 
 `kits/XnuPrelink/emit_prelink.py` performs these steps:

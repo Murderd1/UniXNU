@@ -11,7 +11,9 @@ XnuPrelink binds the built XNU kernel to selected original kexts and writes the 
 For arm64e fileset kernel collections, `emit_prelink.py` selects the fileset
 emitter and generates a function/data map. `--fileset-map FILE` supplies an
 existing map with matching input hashes and matcher version. The selected roots
-and their dependency closure are retained.
+and their dependency closure are retained. A root `!bundle.id` excludes that
+bundle from the closure and retained library lists. The selected revision also
+includes the reviewed 24A446 USB import anchors required by sheng.
 Code comparison accounts for complete compiler-inserted PAC failure checks;
 the emitted native code retains them. Both emitter entry points validate the
 matching code signature before reusing a map.
