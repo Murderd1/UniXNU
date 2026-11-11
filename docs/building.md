@@ -48,6 +48,11 @@ kernelcache, trust-cache and Data seed inputs. Use the board's inventory and the
 ./unixnu tree
 ```
 
+Interrupted HTTP responses are retried. Stored ZIP members such as AEA system
+images resume from their `.partial` cache on the next attempt; the complete
+member CRC and configured SHA-256 are checked before publication. Keep
+`out/ipsw/<build>/` when retrying a failed build.
+
 `ipsw info` must show the OS build selected by the profile. `ipsw fetch` extracts
 the configured members into `out/ipsw/<build>/`. Device firmware, Data seeds and
 ABI audit inputs have their own preparation steps. Check those before building

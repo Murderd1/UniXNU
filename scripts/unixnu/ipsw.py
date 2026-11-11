@@ -8,6 +8,7 @@ The board describes the image in [ipsw]: url (the default remote source), produc
 chip_id, board_id, and the components the steps use.
 """
 import hashlib
+import http.client
 import io
 import json
 import platform
@@ -18,6 +19,7 @@ import time
 import urllib.error
 import urllib.request
 import zipfile
+import zlib
 from pathlib import Path
 
 from .util import Error, expand, log, lzfse, sha256_file, tool
@@ -68,7 +70,7 @@ class RangeFile(io.RawIOBase):
                         raise OSError('short range response')
                     self.cache[index] = data
                     break
-                except (OSError, urllib.error.URLError):
+                except (OSError, urllib.error.URLError, http.client.HTTPException):
                     if attempt == self.retries - 1:
                         raise
                     time.sleep(2 ** attempt)
@@ -151,14 +153,32 @@ class Ipsw:
         self.cache.mkdir(parents=True, exist_ok=True)
         partial = destination.with_suffix(destination.suffix + '.partial')
         digest = hashlib.sha256()
+        entry = self.zip.getinfo(name)
+        offset, crc = 0, 0
+        # AEA members are stored without ZIP compression. ZipExtFile can seek
+        # directly to the saved offset, but disables its own CRC after seeking.
+        # Hash and CRC the preserved prefix, then verify the complete member.
+        if partial.is_file() and entry.compress_type == zipfile.ZIP_STORED and partial.stat().st_size <= size:
+            with partial.open('rb') as saved:
+                while chunk := saved.read(CHUNK):
+                    digest.update(chunk)
+                    crc = zlib.crc32(chunk, crc)
+                    offset += len(chunk)
         log(f'ipsw: extracting {component} ({name}, {size >> 20} MiB)')
-        with self.zip.open(name) as source, partial.open('wb') as target:
+        if offset:
+            log(f'ipsw: resuming {name} at {offset >> 20} MiB')
+        with self.zip.open(name) as source, partial.open('ab' if offset else 'wb') as target:
+            if offset:
+                source.seek(offset)
             while chunk := source.read(CHUNK):
                 target.write(chunk)
                 digest.update(chunk)
+                crc = zlib.crc32(chunk, crc)
         if partial.stat().st_size != size:
             partial.unlink()
             raise Error(f'incomplete extraction of {name}')
+        if crc != entry.CRC:
+            raise Error(f'{name} differs from the IPSW member CRC; preserve and inspect {partial}')
         if pin and digest.hexdigest() != pin:
             partial.unlink()
             raise Error(f'{name} differs from the pinned sha256 of board.toml [ipsw.sha256]: {digest.hexdigest()}')

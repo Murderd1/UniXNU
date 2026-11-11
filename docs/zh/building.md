@@ -46,6 +46,10 @@ cp unixnu.example.toml unixnu.local.toml
 ./unixnu tree
 ```
 
+HTTP 响应中途截断时会重试。AEA 系统镜像等未压缩的 ZIP 成员在下次运行时从
+`.partial` 缓存继续；完整成员的 CRC 和配置中的 SHA-256 验证通过后才发布。
+失败后重试时保留 `out/ipsw/<build>/`。
+
 `ipsw info` 应显示 profile 选定的 OS 构建，`ipsw fetch` 将配置的成员提取到 `out/ipsw/<build>/`。
 设备固件、Data seed 和 ABI 审计输入各有准备步骤，在执行消费它们的配方前逐项确认。
 
