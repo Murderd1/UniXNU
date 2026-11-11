@@ -74,6 +74,18 @@ Run it in a fork of the device repository:
 3. Download the artifacts, then delete the run (`gh run delete`). The artifacts
    are boot images of one device and are not kept.
 
+### Self-hosted sheng builds
+
+The sheng device fork also offers a `sheng-build` self-hosted macOS ARM64
+runner. Install full Xcode with the iPhoneOS SDK, use Python 3.11 or newer
+in the runner service PATH, and add `$(brew --prefix rustup)/bin` for
+Homebrew's Cargo and rustc shims. Check `cargo +1.98.0 --version` before
+starting the package job. The sheng workflow accepts an original local
+Data backup through `SHENG_DATA_SEED_PATH` and `SHENG_DATA_SEED_SHA256`
+in the runner environment; keep it outside the checkout and leave
+`init_data` unchecked when reusing an installation. Hosted runners remain
+available in the workflow's runner choice.
+
 ## board.toml keys
 
 ```toml

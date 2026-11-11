@@ -60,6 +60,16 @@ ipsw tap），并在构建前断言齐全。板级在 board.toml 的 `[firmware.
 3. 下载产物后删除该运行（`gh run delete`）。产物是一台设备的启动镜像，
    不保留。
 
+### sheng 自托管构建
+
+sheng 设备 fork 还提供 `sheng-build` 自托管 macOS ARM64 runner。
+本机需安装含 iPhoneOS SDK 的完整 Xcode，并在 runner 服务的 PATH 中加入
+Python 3.11 或更新版本及 `$(brew --prefix rustup)/bin`，后者提供 Homebrew
+的 Cargo 和 rustc 入口。打包前检查 `cargo +1.98.0 --version`。
+sheng 工作流通过 runner 环境中的 `SHENG_DATA_SEED_PATH` 和
+`SHENG_DATA_SEED_SHA256` 校验并复用原本地 Data 备份；备份放在检出目录以外，
+后续构建不勾选 `init_data`。工作流仍可选择 GitHub 托管 runner。
+
 ## board.toml 键
 
 ```toml
