@@ -81,6 +81,15 @@ The owner confirmed the matching menu, physical navigation, visible Not Found
 error and Hello returning to the menu on sheng build `e48871c4a505`; this
 single complete run passed the menu/file fixture stage.
 
+The next sheng trial reuses the existing complete kernel at the owner's
+request. Its v4 repack disables persistent Data and native UFS log/export
+writes and removes installation. The first device attempt displayed four
+fallback entries instead of its two configured entries, then a failure and
+power-off; XNU execution was not observed. The `full` firmware variant reports
+the incoming initrd and verifies the exact FAT volume behind any vendor prefix
+before offering a manually confirmed DarwinBoot handoff. Keep payload discovery,
+loader handoff, kernel entry and platform initialization as separate evidence.
+
 Checks:
 
 - Serial lines start with `UNIXNU:`.
