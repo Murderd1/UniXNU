@@ -98,6 +98,14 @@ macOS 优化后的旧模拟函数曾错误计算 UTF-16 长度。此类主机模
 和 MMU 切换顺序。PE 加载时的 PoU 同步与关闭缓存后的执行要求不同；该假设
 仍需真机结果验证。
 
+该缓存同步对照镜像随后在 sheng 上到达预期的 `NATIVE_UFS root check`
+诊断停屏。探针在读取 GPT 和 userdata 首块后主动停止。实测 4 KiB LBA
+范围为 `0x2f3840..0x3d0abfa`，容量 249497890816 字节，与待安装稀疏根
+镜像的展开大小一致。`manifest status=1 windows=0` 表示当前原厂 Android
+userdata 开头没有 SHNGROOT，不是拒绝了尚未安装的候选镜像签名策略。
+固定这次成功结果，不重复验收。安装候选镜像需要明确授权覆盖 userdata；
+根卷挂载、持久 Data 和 launchd 仍未验证。
+
 检查：
 
 - 串口行以 `UNIXNU:` 开头。

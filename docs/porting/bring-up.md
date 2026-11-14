@@ -127,6 +127,16 @@ the executing handoff code to PoC while retaining the original TLBI and MMU
 sequence. The PE load path's PoU synchronization and cache-off execution have
 different requirements; keep this hypothesis separate from device proof.
 
+The isolated self-code-clean image then reached the expected `NATIVE_UFS root
+check` panic on sheng. This diagnostic deliberately parks after reading the
+GPT and userdata's first block. The observed 4 KiB LBA range
+`0x2f3840..0x3d0abfa` gives 249497890816 bytes, matching the prepared sparse
+root image's expanded size. `manifest status=1 windows=0` means the current
+stock Android userdata does not begin with SHNGROOT; it does not reject the
+uninstalled candidate's signed policy. Preserve this successful single run.
+Installing the candidate requires explicit authorization to overwrite userdata;
+root mounting, persistent Data and launchd remain unverified.
+
 Checks:
 
 - Serial lines start with `UNIXNU:`.
