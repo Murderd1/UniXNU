@@ -94,6 +94,13 @@ kernel-probe fixture uses explicit 16-bit string reads: an optimized macOS
 mock reported an incorrect UTF-16 length. Keep these host simulation failures
 separate from firmware or device results.
 
+The owner's sheng diagnostic photos show a valid, reserved initrd of about
+31.7 MiB starting with legacy LZ4 bytes, below the 176 MiB FAT input. The driver
+returns `Bad Buffer Size` before scanning; no payload file or XNU is loaded.
+This supports stock ramdisk delivery. A same-body v3 header comparison is
+the next transport experiment; retain memory reservations and record its
+result before changing kernel inputs.
+
 Checks:
 
 - Serial lines start with `UNIXNU:`.
