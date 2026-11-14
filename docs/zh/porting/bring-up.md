@@ -6,6 +6,16 @@ bring-up 按阶段推进。每个阶段都有可见结果和日志行，一次�
 
 启用外设前完成对应[适配流程](/zh/porting/drivers)，按[构建指南](/zh/building)生成镜像，再依次检查以下阶段。失败后先保存镜像和最后日志，再修改输入。macOS 镜像经过相同阶段，另有 [macOS 检查点](/zh/porting/macos#bring-up)。
 
+## 阶段 0：原厂启动基线
+
+测试替代固件前，先确认匹配设备的原厂系统能够正常启动，电脑也能在 Fastboot
+模式识别设备。恢复 Android 时使用适合本机的官方包，并保留 Bootloader 解锁状态。
+分别记录实际原厂系统版本和设备仓库选择的固件输入版本。连续三次正常启动后，
+再测试替代镜像。
+
+如果临时启动连对应的原厂 boot 镜像也拒绝，先排查这一启动方式。编译成功或
+Fastboot 返回 `OKAY` 都不等于已经进入 UEFI。
+
 ## 阶段 1：UEFI
 
 目标：固件进入 UEFI shell、启动菜单或 UniXNU。
@@ -16,7 +26,17 @@ bring-up 按阶段推进。每个阶段都有可见结果和日志行，一次�
 - 启动镜像 header 满足 bootloader 要求。
 - `fastboot boot boot.img` 启动固件，不复位。
 - framebuffer 有输出，或串口有 UEFI 输出。
-- 块设备和负载卷可见。Mu-Silicium initrd 负载需要在 FD 中包含 `UniXNURamDiskDxe`、DiskIoDxe 和 FAT，详见[固件集成](/zh/porting/uefi-firmware#required-integration)。
+- 独立固件测试界面保持运行，不自动启动系统。连续三次冷启动，每次观察至少五分钟
+  可见心跳、确认真实按键响应，并验证能返回 Fastboot。每次保存构建编号和镜像哈希。
+
+sheng 使用设备仓库的独立 **UEFI probe** 工作流或 `scripts/build-uefi-probe.py`。
+它在隔离源码副本中嵌入测试界面并移除 DarwinBoot，沿用板级固定的原厂固件输入，
+不需要内核、IPSW、payload、安装种子或 userdata 镜像。早期 DEBUG 阶段标记写入
+继承的帧缓冲，并非物理串口输出。仅凭黑屏仍无法区分 BootShim 未执行和显示断链。
+测试界面的普通重启不保证进入 Fastboot，需另行验证硬件恢复组合键。
+
+块设备和负载卷留到阶段 3 接入 payload 时检查。Mu-Silicium initrd 负载需要在 FD
+中包含 `UniXNURamDiskDxe`、DiskIoDxe 和 FAT，详见[固件集成](/zh/porting/uefi-firmware#required-integration)。
 
 ```sh
 fastboot boot out/<device>/<os_profile>/<config>/boot/boot.img

@@ -6,6 +6,19 @@ For repeated builds, save paths in [unixnu.local.toml](/reference/configuration#
 
 Before enabling a peripheral, complete its [adaptation procedure](/porting/drivers). Build the image with [Building](/building), then use these checkpoints in order. After each failure, keep the image and the last log before changing inputs. A macOS image follows the same stages with the [macOS checkpoints](/porting/macos#bring-up).
 
+## Stage 0: Stock boot baseline
+
+Before testing a replacement firmware, verify that a matching official stock
+system boots normally and the host detects the device in Fastboot. If restoring
+Android, use the device's appropriate official package and retain its unlocked
+bootloader. Record the actual stock system version separately from the firmware
+inputs selected by the device repository. Three normal starts establish a
+repeatable baseline before testing the replacement image.
+
+If temporary boot rejects the stock boot image too, investigate that boot
+method before assigning the failure to UEFI. A successful build or a Fastboot
+`OKAY` response is not a firmware execution checkpoint.
+
 ## Stage 1: UEFI
 
 Goal: the firmware reaches a UEFI shell, a boot menu or the UniXNU application.
@@ -16,7 +29,23 @@ Checks:
 - The boot image header matches the bootloader requirement.
 - `fastboot boot boot.img` starts the firmware without a reset.
 - The framebuffer shows output, or the serial port shows UEFI output.
-- Block devices and the payload volume are visible. For a Mu-Silicium initrd payload, check `UniXNURamDiskDxe`, DiskIoDxe and FAT in the FD using the [firmware integration guide](/porting/uefi-firmware#required-integration).
+- A firmware-only probe stays in its interface without starting an OS. Test
+  three cold boots with at least five minutes of visible heartbeat, real key
+  response and a demonstrated return to Fastboot. Save the build ID and image
+  hash with each observation.
+
+For sheng, use the device repository's independent **UEFI probe** workflow or
+`scripts/build-uefi-probe.py`. It embeds a standalone interface and removes
+DarwinBoot in isolated source copies. It uses the board's existing pinned stock
+archive and needs no kernel, IPSW, payload, installation seed or userdata image.
+Its early DEBUG markers use the inherited framebuffer; they are not physical
+UART output. BootShim execution and an invisible display cannot be distinguished
+by a black screen alone. The probe's ordinary restart does not guarantee
+Fastboot entry; verify the hardware recovery key combination separately.
+
+Block devices and the payload volume are checked when adding the payload in
+stage 3. For a Mu-Silicium initrd payload, check `UniXNURamDiskDxe`, DiskIoDxe
+and FAT using the [firmware integration guide](/porting/uefi-firmware#required-integration).
 
 Tools:
 
