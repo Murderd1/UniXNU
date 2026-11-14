@@ -106,6 +106,13 @@ builder uses v3, while the accepted standalone probe/menu remain v4. Preserve
 that image as a baseline and use read-only root diagnostics before installing
 a root image over the restored Android userdata.
 
+The first root-probe trial used a shorter argument set and restarted into
+Android after transient output; no root-check result was captured. Preserve
+the accepted kernel arguments and append only `native-ufs-probe=10` for the
+next comparison, retaining `log=0 data-persist=0`. Changing many optional
+arguments at once prevents isolating the probe path. The expected diagnostic
+panic is a metadata checkpoint, not proof of root mounting or userland.
+
 Checks:
 
 - Serial lines start with `UNIXNU:`.
