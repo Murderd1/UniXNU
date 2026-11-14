@@ -77,6 +77,9 @@ missing-file error or the file-loaded Hello, which returns to the menu after
 automatic key enrollment; the stock bootloader and board firmware pins remain
 unchanged. Device observations must establish configuration, error and file
 execution separately before continuing to XNU.
+The owner confirmed the matching menu, physical navigation, visible Not Found
+error and Hello returning to the menu on sheng build `e48871c4a505`; this
+single complete run passed the menu/file fixture stage.
 
 Checks:
 
