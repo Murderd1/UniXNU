@@ -35,6 +35,11 @@ sheng 使用设备仓库的独立 **UEFI probe** 工作流或 `scripts/build-uef
 继承的帧缓冲，并非物理串口输出。仅凭黑屏仍无法区分 BootShim 未执行和显示断链。
 测试界面的普通重启不保证进入 Fastboot，需另行验证硬件恢复组合键。
 
+sheng 的一次真机对照保持 BootShim、FD、gzip 负载和 DTB 不变，仅将 Android boot
+头从 v0 改为 v4 后，UEFI 测试界面可见且音量键有响应。用户还确认至少 300 次心跳
+持续递增。连续三次冷启动和通过硬件组合键返回 Fastboot 仍待验收。独立构建入口
+只在隔离的板级配置副本中覆盖为 v4，原始 `board.toml` 的固件输入固定值保持不变。
+
 块设备和负载卷留到阶段 3 接入 payload 时检查。Mu-Silicium initrd 负载需要在 FD
 中包含 `UniXNURamDiskDxe`、DiskIoDxe 和 FAT，详见[固件集成](/zh/porting/uefi-firmware#required-integration)。
 

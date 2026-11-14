@@ -43,6 +43,13 @@ UART output. BootShim execution and an invisible display cannot be distinguished
 by a black screen alone. The probe's ordinary restart does not guarantee
 Fastboot entry; verify the hardware recovery key combination separately.
 
+A sheng device comparison kept BootShim, the FD, gzip payload and DTB unchanged:
+switching the Android boot header from v0 to v4 produced a visible UEFI probe
+with responsive volume keys. The user also confirmed at least 300 advancing
+heartbeats. Three cold boots and return to Fastboot with the hardware keys
+remain pending. The independent builder applies the v4 override to its isolated
+board configuration; it leaves the original `board.toml` firmware pins unchanged.
+
 Block devices and the payload volume are checked when adding the payload in
 stage 3. For a Mu-Silicium initrd payload, check `UniXNURamDiskDxe`, DiskIoDxe
 and FAT using the [firmware integration guide](/porting/uefi-firmware#required-integration).
