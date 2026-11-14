@@ -113,6 +113,12 @@ next comparison, retaining `log=0 data-persist=0`. Changing many optional
 arguments at once prevents isolating the probe path. The expected diagnostic
 panic is a metadata checkpoint, not proof of root mounting or userland.
 
+The controlled sheng trial then stopped in a UEFI CPU exception dump without
+root-check fields. Preserve its first exception header and runtime module
+addresses before assigning a cause. A module named in a backtrace does not
+necessarily contain the faulting instruction. Keep the previously accepted
+kernel image separate; this result does not justify installing the root image.
+
 Checks:
 
 - Serial lines start with `UNIXNU:`.
