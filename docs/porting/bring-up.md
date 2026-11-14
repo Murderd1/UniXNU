@@ -89,6 +89,10 @@ power-off; XNU execution was not observed. The `full` firmware variant reports
 the incoming initrd and verifies the exact FAT volume behind any vendor prefix
 before offering a manually confirmed DarwinBoot handoff. Keep payload discovery,
 loader handoff, kernel entry and platform initialization as separate evidence.
+Run native host checks before downloading the large firmware inputs. The
+kernel-probe fixture uses explicit 16-bit string reads: an optimized macOS
+mock reported an incorrect UTF-16 length. Keep these host simulation failures
+separate from firmware or device results.
 
 Checks:
 
