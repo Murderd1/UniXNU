@@ -75,8 +75,12 @@ macOS 优化后的旧模拟函数曾错误计算 UTF-16 长度。此类主机模
 
 用户提供的 sheng 诊断照片显示，initrd 有效且已保留，但仅约 31.7 MiB，开头是
 旧版 LZ4 压缩头，小于输入的 176 MiB FAT。驱动在扫描前返回 `Bad Buffer Size`，
-尚未加载负载文件或 XNU。这支持交接了原厂 ramdisk 的判断。下一步使用内容相同、
-仅换 v3 启动头的镜像对照，保留内存预留检查，先记录交接结果再改内核输入。
+尚未加载负载文件或 XNU。随后仅换 v3 启动头的同内容镜像成功发布完整 FAT，
+手动确认后，XNU 已执行到 `bsd_init` 和 `native_source_storage_start`，显示
+`root step 3: root manifest rejected`。此前已完成 GPT 和 userdata 首块读取。
+这次真实运行通过了用户划分的内核交接阶段，尚未通过根卷挂载和用户态阶段。
+完整载荷构建使用 v3；已验收的独立 probe/menu 保持 v4。固定本次镜像作为基线，
+先只读诊断根卷清单，再考虑向恢复后的 Android userdata 安装根镜像。
 
 检查：
 

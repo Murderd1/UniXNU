@@ -97,9 +97,14 @@ separate from firmware or device results.
 The owner's sheng diagnostic photos show a valid, reserved initrd of about
 31.7 MiB starting with legacy LZ4 bytes, below the 176 MiB FAT input. The driver
 returns `Bad Buffer Size` before scanning; no payload file or XNU is loaded.
-This supports stock ramdisk delivery. A same-body v3 header comparison is
-the next transport experiment; retain memory reservations and record its
-result before changing kernel inputs.
+The same-body v3 comparison then published the full digest-verified FAT and,
+after physical confirmation, executed XNU through `bsd_init` and
+`native_source_storage_start`. The visible `root step 3: root manifest rejected`
+panic follows GPT and userdata-block reads. This passes the owner's kernel
+handoff stage once; it does not establish root mounting or userland. The full
+builder uses v3, while the accepted standalone probe/menu remain v4. Preserve
+that image as a baseline and use read-only root diagnostics before installing
+a root image over the restored Android userdata.
 
 Checks:
 
