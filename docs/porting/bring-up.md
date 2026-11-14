@@ -119,6 +119,14 @@ addresses before assigning a cause. A module named in a backtrace does not
 necessarily contain the faulting instruction. Keep the previously accepted
 kernel image separate; this result does not justify installing the root image.
 
+The first exception header subsequently identified DarwinBoot+0x6f084 at its
+runtime base, matching `tlbi vmalle1` after the MMU/cache shutdown. The loader
+code is identical to the earlier successful sheng image, so this does not
+establish an unsupported instruction. The next isolated comparison cleans
+the executing handoff code to PoC while retaining the original TLBI and MMU
+sequence. The PE load path's PoU synchronization and cache-off execution have
+different requirements; keep this hypothesis separate from device proof.
+
 Checks:
 
 - Serial lines start with `UNIXNU:`.
