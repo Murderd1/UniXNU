@@ -12,8 +12,9 @@ Before testing a replacement firmware, verify that a matching official stock
 system boots normally and the host detects the device in Fastboot. If restoring
 Android, use the device's appropriate official package and retain its unlocked
 bootloader. Record the actual stock system version separately from the firmware
-inputs selected by the device repository. Three normal starts establish a
-repeatable baseline before testing the replacement image.
+inputs selected by the device repository. One complete successful stock start
+and Fastboot detection satisfy this baseline. The sheng baseline was checked
+with three successful ordinary Android reboots.
 
 If temporary boot rejects the stock boot image too, investigate that boot
 method before assigning the failure to UEFI. A successful build or a Fastboot
@@ -29,10 +30,10 @@ Checks:
 - The boot image header matches the bootloader requirement.
 - `fastboot boot boot.img` starts the firmware without a reset.
 - The framebuffer shows output, or the serial port shows UEFI output.
-- A firmware-only probe stays in its interface without starting an OS. Test
-  three cold boots with at least five minutes of visible heartbeat, real key
-  response and a demonstrated return to Fastboot. Save the build ID and image
-  hash with each observation.
+- A firmware-only probe stays in its interface without starting an OS. One
+  complete successful run is sufficient: at least 300 visible one-second
+  heartbeat ticks, a matching build ID, real key response and a demonstrated
+  return to Fastboot. Save the image hash with the observations.
 
 For sheng, use the device repository's independent **UEFI probe** workflow or
 `scripts/build-uefi-probe.py`. It embeds a standalone interface and removes
@@ -41,14 +42,16 @@ archive and needs no kernel, IPSW, payload, installation seed or userdata image.
 Its early DEBUG markers use the inherited framebuffer; they are not physical
 UART output. BootShim execution and an invisible display cannot be distinguished
 by a black screen alone. The probe's ordinary restart does not guarantee
-Fastboot entry; verify the hardware recovery key combination separately.
+Fastboot entry; use the hardware recovery key combination for this check.
 
 A sheng device comparison kept BootShim, the FD, gzip payload and DTB unchanged:
 switching the Android boot header from v0 to v4 produced a visible UEFI probe
-with responsive volume keys. The user also confirmed at least 300 advancing
-heartbeats. Three cold boots and return to Fastboot with the hardware keys
-remain pending. The independent builder applies the v4 override to its isolated
-board configuration; it leaves the original `board.toml` firmware pins unchanged.
+with responsive volume keys. The user confirmed the matching build ID, at least
+300 advancing heartbeats without a reset and return to Fastboot with the
+hardware keys. Stage 1 passed this complete run. The user waived three cold-boot
+repetitions; they were not performed and are not a pending action. The independent
+builder applies the v4 override to its isolated board configuration; it leaves
+the original `board.toml` firmware pins unchanged.
 
 Block devices and the payload volume are checked when adding the payload in
 stage 3. For a Mu-Silicium initrd payload, check `UniXNURamDiskDxe`, DiskIoDxe
@@ -65,6 +68,15 @@ If firmware stops responding, reset into the device's bootloader, confirm `fastb
 ## Stage 2: UniXNU
 
 Goal: the menu appears and the configuration is parsed.
+
+The sheng `--stage menu` fixture embeds a read-only FAT volume in firmware,
+containing a build-linked configuration and HelloPayload EFI file. It needs no
+boot ramdisk or `vendor_boot` write. Physical confirmation selects an expected
+missing-file error or the file-loaded Hello, which returns to the menu after
+15 seconds. The isolated research firmware permits this test EFI and skips
+automatic key enrollment; the stock bootloader and board firmware pins remain
+unchanged. Device observations must establish configuration, error and file
+execution separately before continuing to XNU.
 
 Checks:
 

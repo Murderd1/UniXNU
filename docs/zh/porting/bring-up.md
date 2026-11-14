@@ -10,8 +10,8 @@ bring-up 按阶段推进。每个阶段都有可见结果和日志行，一次�
 
 测试替代固件前，先确认匹配设备的原厂系统能够正常启动，电脑也能在 Fastboot
 模式识别设备。恢复 Android 时使用适合本机的官方包，并保留 Bootloader 解锁状态。
-分别记录实际原厂系统版本和设备仓库选择的固件输入版本。连续三次正常启动后，
-再测试替代镜像。
+分别记录实际原厂系统版本和设备仓库选择的固件输入版本。完成一次正常启动和
+Fastboot 识别即可通过该基线。sheng 已实际完成三次普通 Android 重启。
 
 如果临时启动连对应的原厂 boot 镜像也拒绝，先排查这一启动方式。编译成功或
 Fastboot 返回 `OKAY` 都不等于已经进入 UEFI。
@@ -26,19 +26,22 @@ Fastboot 返回 `OKAY` 都不等于已经进入 UEFI。
 - 启动镜像 header 满足 bootloader 要求。
 - `fastboot boot boot.img` 启动固件，不复位。
 - framebuffer 有输出，或串口有 UEFI 输出。
-- 独立固件测试界面保持运行，不自动启动系统。连续三次冷启动，每次观察至少五分钟
-  可见心跳、确认真实按键响应，并验证能返回 Fastboot。每次保存构建编号和镜像哈希。
+- 独立固件测试界面保持运行，不自动启动系统。一次完整成功即可通过：观察至少
+  300 次可见的一秒心跳、核对构建编号、确认真实按键响应，并验证能返回 Fastboot。
+  保存镜像哈希和实际观察记录。
 
 sheng 使用设备仓库的独立 **UEFI probe** 工作流或 `scripts/build-uefi-probe.py`。
 它在隔离源码副本中嵌入测试界面并移除 DarwinBoot，沿用板级固定的原厂固件输入，
 不需要内核、IPSW、payload、安装种子或 userdata 镜像。早期 DEBUG 阶段标记写入
 继承的帧缓冲，并非物理串口输出。仅凭黑屏仍无法区分 BootShim 未执行和显示断链。
-测试界面的普通重启不保证进入 Fastboot，需另行验证硬件恢复组合键。
+测试界面的普通重启不保证进入 Fastboot，使用硬件恢复组合键完成这一检查。
 
 sheng 的一次真机对照保持 BootShim、FD、gzip 负载和 DTB 不变，仅将 Android boot
-头从 v0 改为 v4 后，UEFI 测试界面可见且音量键有响应。用户还确认至少 300 次心跳
-持续递增。连续三次冷启动和通过硬件组合键返回 Fastboot 仍待验收。独立构建入口
-只在隔离的板级配置副本中覆盖为 v4，原始 `board.toml` 的固件输入固定值保持不变。
+头从 v0 改为 v4 后，UEFI 测试界面可见且音量键有响应。用户已核对构建编号，确认
+至少 300 次心跳持续递增且未复位，并通过硬件组合键返回 Fastboot。阶段 1 已按
+一次完整成功的标准通过。三次冷启动重复测试未执行，用户已明确免除，不再作为
+待办。独立构建入口只在隔离的板级配置副本中覆盖为 v4，原始 `board.toml` 的固件
+输入固定值保持不变。
 
 块设备和负载卷留到阶段 3 接入 payload 时检查。Mu-Silicium initrd 负载需要在 FD
 中包含 `UniXNURamDiskDxe`、DiskIoDxe 和 FAT，详见[固件集成](/zh/porting/uefi-firmware#required-integration)。
@@ -52,6 +55,12 @@ fastboot boot out/<device>/<os_profile>/<config>/boot/boot.img
 ## 阶段 2：UniXNU
 
 目标：菜单出现，配置解析成功。
+
+sheng 的 `--stage menu` 测试在固件内嵌只读 FAT 卷，包含带构建编号的配置和
+HelloPayload EFI 文件，不需要 boot ramdisk 或写入 `vendor_boot`。通过物理按键
+确认后，分别验证预期的文件不存在错误，以及从文件运行 Hello 并在 15 秒后返回
+菜单。隔离测试固件允许该 EFI 文件并跳过自动密钥登记；原厂 Bootloader 和板级
+固件输入固定值保持不变。配置、错误提示和文件执行应分别用真机结果验收，再进入 XNU。
 
 检查：
 
